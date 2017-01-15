@@ -1,0 +1,79 @@
+.top-titlebar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 30px;
+  background-color: #7a7c7c;
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
+}
+
+.top-titlebar-icon {
+  position: absolute;
+  left: 6px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+
+.top-titlebar-text {
+  position: absolute;
+  left: 30px;
+  width: 80%;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  font-family: Arial,"Helvetica Neue",Helvetica,sans-serif;
+  font-size: 11pt;
+  color: #ffffff;
+}
+
+.top-titlebar-min-button{
+  position: absolute;
+  right: 88px;
+  width: 44px;
+  height: 30px;
+  margin-top: 0;
+  margin-bottom: 0;
+  -webkit-app-region: no-drag;
+}
+
+.top-titlebar-max-button{
+  position: absolute;
+  right: 44px;
+  width: 44px;
+  height: 30px;
+  margin-top: 0;
+  margin-bottom: 0;
+  -webkit-app-region: no-drag;
+  z-index: 1;
+}
+
+.top-titlebar-restore-button{
+  position: absolute;
+  right: 44px;
+  width: 44px;
+  height: 30px;
+  margin-top: 0;
+  margin-bottom: 0;
+  -webkit-app-region: no-drag;
+  z-index: -1;
+}
+
+.top-titlebar-close-button{
+  position: absolute;
+  right: 0;
+  width: 44px;
+  height: 30px;
+  margin-top: 0;
+  margin-bottom: 0;
+  -webkit-app-region: no-drag;
+}
+
+.top-titlebar-divider {
+  position: absolute;
+  left: 0;
+  top: 30px;
+  width: 100%;
+  height: 1px;
+  background-color: #2a2c2c;
+}

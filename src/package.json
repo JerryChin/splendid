@@ -1,0 +1,34 @@
+{
+  "name": "splendid",
+  "version": "0.1.0",
+  "main": "views/index.html",
+  "dependencies": {
+    "font-awesome": "^4.7.0",
+    "materialize-css": "^0.97.8",
+    "mkdirp": "^0.5.1",
+    "request": "^2.79.0",
+    "unsplash-js": "^4.3.1",
+    "wallpaper": "^2.3.0"
+  },
+  "description": "一个轻量级的桌面应用，最主要功能是显示从 Unsplash 抓取的最新内容，用户可以自由裁剪设置为桌面壁纸。",
+  "keywords": [
+    "splendid",
+    "wallpaper"
+  ],
+  "window": {
+    "title": "Splendid !",
+    "icon": "",
+    "show": false,
+    "toolbar": false,
+    "frame": false,
+    "width": 1024,
+    "height": 649,
+    "position": "center",
+    "min_width": 800,
+    "min_height": 500,
+    "fullscreen": false
+  },
+  "webkit": {
+    "plugin": true
+  }
+}

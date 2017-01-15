@@ -1,0 +1,199 @@
+<html>
+<head>
+    <title>Splendid !</title>
+    <meta charset="utf-8">
+    <!-- fonts.googleapis.com is not available in certain nations -->
+    <!--<link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">-->
+
+    <!--Import Google Icon Font-->
+    <link type="text/css" rel="stylesheet" href="../public/stylesheets/material-icons.css"
+          media="screen,projection"/>
+
+    <!--Import font-awesome.css-->
+    <link type="text/css" rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css"
+          media="screen,projection"/>
+
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="../node_modules/materialize-css/dist/css/materialize.min.css"
+          media="screen,projection"/>
+
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <link type="text/css" rel="stylesheet" href="../public/stylesheets/app.css" media="screen,projection"/>
+    <link type="text/css" rel="stylesheet" href="../public/stylesheets/titlebar-style.css" media="screen,projection"/>
+    <link type="text/css" rel="stylesheet" href="../public/stylesheets/croppie.css" media="screen,projection"/>
+
+    <!--Import jQuery before materialize.js-->
+    <script type="text/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="../public/javascripts/app.js"></script>
+    <script type="text/javascript" src="../public/javascripts/frameless_window.js"></script>
+    <script type="text/javascript" src="../public/javascripts/titlebar.js"></script>
+    <script type="text/javascript" src="../public/javascripts/croppie.js"></script>
+    <script type="text/javascript" src="../node_modules/materialize-css/dist/js/materialize.min.js"></script>
+    <script>
+        $(() => {
+            // Initialize collapse button
+            $(".button-collapse").sideNav();
+            $('.modal').modal();
+
+            neutralizeEternalUrl(document, '.contributions a');
+        });
+
+    </script>
+</head>
+<body>
+<template id="photo-template">
+        <div class="photo">
+            <div class="card">
+                <div class="card-image">
+                    <img src="#" />
+                </div>
+                <div class="card-overly">
+                    <div class="side top">
+                    </div>
+                    <div class="side bottom">
+                        <!--<div class="card-overly-btn right"><i class="fa fa-bookmark-o" aria-hidden="true"></i>-->
+                        <!--</div>-->
+                        <div class="card-overly-btn left">
+                            <a href="#" data-name="author-profile" ><img class="circle" src="" data-name="profile-image"><span data-name="author-name"></span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</template>
+<div id="main">
+    <div class="panel-background">
+    </div>
+    <div id="photos">
+        <div class="row">
+            <div class="col s4">
+            </div>
+            <div class="col s4">
+            </div>
+            <div class="col s4">
+            </div>
+        </div>
+        <div id="preloader">
+                <div class="preloader-wrapper small active">
+                    <div class="spinner-layer spinner-green-only">
+                        <div class="circle-clipper left">
+                            <div class="circle"></div>
+                        </div>
+                        <div class="gap-patch">
+                            <div class="circle"></div>
+                        </div>
+                        <div class="circle-clipper right">
+                            <div class="circle"></div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+        <div class="bottom toolbar">
+            <div class="toolbar-background">
+            </div>
+            <div class="toolbar-btn left button-collapse" data-activates="slide-out">
+                <i class="fa fa-bars fa-2x" aria-hidden="true"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- full viewer with toolbar on the bottom-->
+    <div id="fullViewPhoto">
+        <div id="cropper"></div>
+        <div class="bottom toolbar">
+            <div class="toolbar-background">
+            </div>
+            <div id="use-as-wallpaper" class="toolbar-btn right" onclick="useAsWallpaper();"><i class="fa fa-desktop fa-2x" aria-hidden="true"></i>
+            </div>
+            <div class="toolbar-btn right" onclick="toggleFullscreen();"><i
+                    class="fa fa-arrows-v fa-2x fa-rotate-45" aria-hidden="true"></i></div>
+            <div class="toolbar-btn left" onclick="backToGridView();"><i
+                    class="fa fa-long-arrow-left fa-2x" aria-hidden="true"></i></div>
+        </div>
+        <div class="progress" id="progress">
+            <div class="determinate" style="width: 0"></div>
+        </div>
+    </div>
+
+</div>
+
+<!-- side navigation -->
+<ul id="slide-out" class="side-nav">
+    <li><div class="userView">
+        <div class="background">
+            <img src="../public/images/office.jpg"> <!--  asset credit to: http://materializecss.com/images/office.jpg -->
+        </div>
+        <a href="#!user"><img class="circle" src="../public/images/user-default.png"></a> <!-- asset credit to: https://developers.google.com/experts/img/user/user-default.png -->
+        <a href="#!name"><span class="white-text name">Unknown</span></a>
+        <a href="#!email"><span class="white-text email">unknown@example.com</span></a>
+    </div></li>
+    <li><a href="#!"><i class="material-icons">cloud</i>link to Unsplash</a></li>
+    <li><a href="#!"><i class="material-icons">grade</i>favorites</a></li>
+    <li><div class="divider"></div></li>
+    <li> <!-- Modal Trigger -->
+        <a class="waves-effect" href="#about">About</a>
+    </li>
+    <li class="credit"><span>Photos by Unsplash.®</span></li>
+</ul>
+
+<!-- about Modal -->
+<div id="about" class="modal">
+    <div class="modal-content">
+        <h4>About</h4>
+        <p>
+            Version: 0.1.0
+        </p>
+        <p>
+            Please contact <a href="mailto:metrxqin@gmail.com">metrxqin@gmail.com</a> should you have any questions about this application.
+        </p>
+        <p>
+            Chief Designer( design consultant volunteer): <a href="mailto:#">Arthur Song</a>
+        </p>
+
+        <p class="contributions">
+            All photos used in the application are credited to <a href="https://unsplash.com" style="">Unsplash</a>.
+        </p>
+        <p>
+            This application owes a big debt of gratitude to many great open source projects, here's the list of projects contributed to this application( ordered by alphabet):
+        </p>
+        <ul class="contributions">
+            <li>
+                <a href="https://github.com/Foliotek/Croppie">Croppie</a>
+            </li>
+            <li>
+                <a href="http://fontawesome.io/"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;Font Awesome</a>
+            </li>
+            <li>
+                <a href="http://jquery.com/">jQuery</a>
+            </li>
+            <li>
+                <a href="http://materializecss.com/">Materialize</a>
+            </li>
+            <li>
+                <a href="http://docs.nwjs.io/">nwjs</a>
+            </li>
+            <li>
+                <a href="https://github.com/nwjs/nw-builder">nw-builder</a>
+            </li>
+            <li>
+                <a href="https://unsplash.com"><i class="fa fa-camera" aria-hidden="true"></i>&nbsp;Unsplash</a>
+            </li>
+            <li>
+                <a href="https://github.com/unsplash/unsplash-js">unsplash-js</a>
+            </li>
+            <li>
+                <a href="https://github.com/sindresorhus/wallpaper">wallpaper</a>
+            </li>
+        </ul>
+        <p>
+            Thank you for reading this.
+        </p>
+
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+{
+  "name": "splendid-builder",
+  "version": "0.1.0",
+  "description": "the builder for splendid, a great wallpaper application.",
+  "contributors": [
+    {
+      "name": "Jerry Chin",
+      "email": "metrxqin@gmail.com"
+    },
+    {
+      "name": "Arthur Song",
+      "email": "sonpanr@gmail.com"
+    }
+  ],
+  "repository": {
+    "url": "https://github.com/JerryChin/splendid.git",
+    "type": "git"
+  },
+  "bugs": {
+    "url": "https://github.com/JerryChin/splendid/issues"
+  },
+  "license": "MIT",
+  "scripts": {
+    "dev": "nw src/",
+    "prod": "nwbuild --platforms win32,win64,linux64 --buildDir dist/ src/"
+  },
+  "devDependencies": {
+    "nw": "^0.19.3",
+    "nw-builder": "^3.1.3"
+  }
+}
