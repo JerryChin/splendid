@@ -8,11 +8,8 @@ const path = require('path');
 const fs = require('fs');
 const request = require('request');
 const unsplash = new Unsplash.default({
-    /*
-        put your application info here,
-        please go to https://unsplash.com/documentation if you don't have one.
-     */
-   });
+    UNSPLASH_TOKEN
+});
 
 //init must be called once during startup, before any function to nw.Screen can be called
 nw.Screen.Init();
