@@ -1,5 +1,5 @@
 
-// Dependencies
+// Import dependencies.
 const Unsplash = require('unsplash-js');
 const gui = require("nw.gui");
 const wallpaper = require('wallpaper');
@@ -11,11 +11,11 @@ const unsplash = new Unsplash.default({
     UNSPLASH_TOKEN
 });
 
-//init must be called once during startup, before any function to nw.Screen can be called
+// Init must be called once during startup, before any function to nw.Screen can be called.
 nw.Screen.Init();
 const screens = nw.Screen.screens;
 
-// 确保应用窗口尺寸和物理分辨率一致（注意标题栏高度 30px）
+// Make sure the application window dimension is consistent with the display.
 const titleBarHeight = 30;
 const initialScreenWidth = Math.round(screens[0].bounds.width/1.875);
 const initialScreenHeight = Math.round(screens[0].bounds.height/1.875 + titleBarHeight);
@@ -28,11 +28,13 @@ let page = 1;
 
 const PER_PAGE = 30;
 
-// Runs when the browser has loaded the page
+// Fire when the browser has loaded the page.
 $(() => {
     let $photos = $("#photos");
     $photos.on("scroll", () => {
+
         let $preloader =  $("#preloader");
+
         if(Math.ceil($photos.height() + $photos.offset().top - $preloader.offset().top - $preloader.outerHeight()) >= 1) {
             let promiseOfLovelyPhotos = new Promise((resolve) => {
                 fetchCuratedPhotos(page++, PER_PAGE, resolve);
@@ -50,21 +52,8 @@ $(() => {
                 let $toastContent = $('<span><i class="fa fa-frown-o fa-lg" aria-hidden="true"></i>&nbsp;' + "Oops! something bad happened." +'</span>');
                 Materialize.toast($toastContent, 5000);
             });
-
-            // let photos = dummyPhotos();
-            //
-            // photos.forEach((photo, index) => {
-            //     addPhotoToPhotosArea(photo, index);
-            //     if (index === photos.length-1) {
-            //         bindClickingOnAllPhotos();
-            //     }
-            // });
-
         }
-
     });
-
-
 
     window.document.onkeydown = ((event) => {
         if(event.key === 'F11') {
@@ -72,7 +61,7 @@ $(() => {
         }
     });
 
-    // calling bind() on croppie if available. when the window size is changed.
+    // Calling bind() on croppie if available. when the window size is changed.
     nw.Window.get().on("resize", () => {
         if(croppie && isInFullview()) {
             croppie.bind();
@@ -83,7 +72,7 @@ $(() => {
 });
 
 /**
- * view: 将解析的照片添加至内容区
+ * view: adds photos to the grid view.
  * @param photo
  * @param index
  */
@@ -108,7 +97,7 @@ function addPhotoToPhotosArea(photo, index) {
 }
 
 /**
- * view: 以全屏显示图片
+ * view: displays photo in full-view.
  * @param photo
  */
 function displayPhotoInFullView (photo) {
@@ -137,7 +126,7 @@ function displayPhotoInFullView (photo) {
 }
 
 /**
- * view: 返回展示栅格图片的主页
+ * view: returns to the grid view.
  */
 function backToGridView () {
     croppie.destroy();
@@ -145,7 +134,7 @@ function backToGridView () {
 }
 
 /**
- * view: toggle full-screen state
+ * view: toggles full-screen state
  */
 function toggleFullscreen() {
     if(gui.Window.get().isFullscreen) {
@@ -163,26 +152,12 @@ function toggleFullscreen() {
 function isInFullview() {
    return document.querySelector('#fullViewPhoto').style.display == 'block';
 }
+
 /**
- * helper: Unsplash 返回数据处理函数
- * @param json
+ * helper:
  * @param cb
  */
-function parseUnsplashPhotosfromJson(json, cb) {
-    let photos = [];
-
-    json.forEach((photo, index) => {
-        photos.push(photo);
-    });
-
-    cb(photos);
-}
-
-/**
- * helper: 从Unsplash加载图片数据，并触发回调处理函数
- * @param cb 返回数据后调用该函数
- */
-function fetchCuratedPhotos(page, perPage, cb) {
+function fetchCuratedPhotos (page, perPage, cb) {
     unsplash.photos.listCuratedPhotos(page, perPage, "latest")
         .then(Unsplash.toJson)
         .then(function (json) {
@@ -191,7 +166,7 @@ function fetchCuratedPhotos(page, perPage, cb) {
 }
 
 /**
- * helper: 所有照片绑定全屏展示事件
+ * helper: binds full-view event.
  */
 
 function bindClickingOnAllPhotos () {
@@ -203,7 +178,7 @@ function bindClickingOnAllPhotos () {
 }
 
 /**
- * helper: 绑定图片全屏展示事件
+ * helper: binds full-view event.
  * @param photo
  */
 function bindClickingOnAPhoto (photo) {
@@ -213,7 +188,7 @@ function bindClickingOnAPhoto (photo) {
 }
 
 /**
- * helper: write the image back to disk
+ * helper: writes the image back to disk.
  */
 function bindSavingToDisk (photoData, imageName, cb) {
     let filePath = path.join(getUserHome(),".splendid");
@@ -232,9 +207,9 @@ function bindSavingToDisk (photoData, imageName, cb) {
 }
 
 /**
- * helper: use the specified image as wallpaper
+ * helper: uses the specified image as wallpaper
  */
-function useAsWallpaper() {
+function useAsWallpaper () {
     croppie.result('base64', {
             width: screens[0].bounds.width,
             height: screens[0].bounds.height
@@ -249,17 +224,19 @@ function useAsWallpaper() {
             });
         })
     });
-
 }
 
 /**
- * helper: get the home path of current user.
+ * helper: gets the home path of current user.
  */
-function getUserHome() {
+function getUserHome () {
     return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
 }
 
-function notifyHowToExitFullscreen() {
+/**
+ * helper: instructs the user how to exit full-view.
+ */
+function notifyHowToExitFullscreen () {
   if(isFullScreenToast) {
         let $toastContent = $('<span>Press <span class="key-text">F11</span> to exit full screen.</span>');
         Materialize.toast($toastContent, 4000);
@@ -267,43 +244,10 @@ function notifyHowToExitFullscreen() {
   }
 }
 
-function download(uri, filename, open_callback, close_callback){
-    let filePath = path.join(getUserHome(),".splendid");
-    mkdirp(filePath, function (err) {
-        if (err) console.error(err);
-        else {
-            request.head(uri, function(err, res, body){
-                let contentType = res.headers['content-type'];
-                let contentLength = res.headers['content-length']
-                let imagePath = path.join(filePath, filename + imageMimeTypes[contentType]);
-
-                let watcher = null;
-                request(uri).pipe(fs.createWriteStream(imagePath)).on('close', () => {
-                    close_callback(imagePath, watcher);
-                }).on('open', function () {
-                    watcher = open_callback(imagePath, parseInt(contentLength));
-                }).on('error', function (error) {
-                    alert(error);
-                });
-            });
-        }
-    });
-};
-
-function downloadMonitor(filePath, contentLength) {
-    let watcher = fs.watch(filePath, (eventType, filename) => {
-        if (filename) {
-            let stats = fs.statSync(filePath);
-            let fileSizeInBytes = stats["size"];
-            document.querySelector('.determinate').style.width = (fileSizeInBytes * 1.0 / contentLength * 100).toFixed(2) + "%";
-            console.log((fileSizeInBytes * 1.0 / contentLength * 100).toFixed(2) + "%");
-        }
-    });
-
-    return watcher;
-}
-
-function neutralizeEternalUrl(element, selector) {
+/**
+ * helper: hacks links, so that we can open them in a new window.
+ */
+function neutralizeEternalUrl (element, selector) {
 
     let matcher = element.querySelectorAll(selector);
 
@@ -319,7 +263,6 @@ function neutralizeEternalUrl(element, selector) {
             });
             e.preventDefault();
             e.stopPropagation();
-            e.preventBubble();
         });
     });
 }

@@ -20,8 +20,6 @@ body {
     width: 100%;
     background: url("../images/0fb37e47-7e0c-4ba1-abca-1c3254f2cad3.png") repeat repeat;
     opacity: .06;
-    /*background-repeat:repeat-y;*/
-    /*!*background-attachment:fixed*!*/
 }
 
 #photos{
