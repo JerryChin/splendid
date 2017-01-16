@@ -7,9 +7,9 @@ const mkdirp = require('mkdirp');
 const path = require('path');
 const fs = require('fs');
 const request = require('request');
-const unsplash = new Unsplash.default({
+const unsplash = new Unsplash.default(
     UNSPLASH_TOKEN
-});
+);
 
 // Init must be called once during startup, before any function to nw.Screen can be called.
 nw.Screen.Init();
@@ -40,7 +40,13 @@ $(() => {
                 fetchCuratedPhotos(page++, PER_PAGE, resolve);
             });
 
-            promiseOfLovelyPhotos.then((photos) => {
+            promiseOfLovelyPhotos.then((json) => {
+                if(json.errors) {
+                    throw json.errors;
+                }
+
+                let photos = json;
+
                 photos.forEach((photo, index) => {
                     addPhotoToPhotosArea(photo, index);
                     if (index === photos.length-1) {
@@ -86,9 +92,9 @@ function addPhotoToPhotosArea(photo, index) {
     template.content.querySelector('img').setAttribute('full-url', photo.urls.full);
     template.content.querySelector('img').setAttribute('raw-url', photo.urls.raw);
     template.content.querySelector('img').setAttribute('data-name', photo.id);
-    template.content.querySelector('a[name="author-profile"]').href = photo.user.links.html;
-    template.content.querySelector('img[name="profile-image"]').src=photo.user.profile_image.small;
-    template.content.querySelector('span[name="author-name"]').innerText = photo.user.name;
+    template.content.querySelector('a[data-name="author-profile"]').href = photo.user.links.html;
+    template.content.querySelector('img[data-name="profile-image"]').src=photo.user.profile_image.small;
+    template.content.querySelector('span[data-name="author-name"]').innerText = photo.user.name;
 
     let clone = window.document.importNode(template.content, true);
     neutralizeEternalUrl(clone, 'a[name="author-profile"]');
