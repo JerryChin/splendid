@@ -354,6 +354,17 @@
             width: '100%',
             height: '100%'
         });
+
+        window.addEventListener('resize', function() {
+            if(!self.options.destroyed) {
+                _updatePropertiesFromImage.call(self);
+                _triggerUpdate.call(self);
+            }
+        });
+
+
+
+
         viewport.setAttribute('tabindex', 0);
 
         addClass(self.elements.preview, 'cr-image');
@@ -826,12 +837,11 @@
             minW,
             minH;
 
-        if (!isVisible) {   //self.data.bound
-            // if the croppie isn't visible or it doesn't need binding
+        if (!isVisible) {
+            // if the croppie isn't visible
             return;
         }
 
-        self.data.bound = true;
         cssReset[CSS_TRANSFORM] = transformReset.toString();
         cssReset[CSS_TRANS_ORG] = originReset.toString();
         cssReset['opacity'] = 1;
@@ -1105,9 +1115,9 @@
 
         var max = self.options.enforceBoundary ? 0 : Number.NEGATIVE_INFINITY;
         x1 = Math.max(max, x1 / scale);
-        y1 = Math.max(max, y1 / scale);
+        y1 = Math.max(max, Math.trunc(y1 / scale)); // fix inaccuracy introduced by css3d
         x2 = Math.max(max, x2 / scale);
-        y2 = Math.max(max, y2 / scale);
+        y2 = Math.max(max, Math.ceil(y2 / scale)); // fix inaccuracy introduced by css3d
 
         return {
             points: [fix(x1), fix(y1), fix(x2), fix(y2)],
@@ -1218,6 +1228,7 @@
             self.element.removeChild(self.elements.zoomerWrap);
         }
         delete self.elements;
+        self.options.destroyed = true;
     }
 
     if (window.jQuery) {
@@ -1268,6 +1279,7 @@
     function Croppie(element, opts) {
         this.element = element;
         this.options = deepExtend(deepExtend({}, Croppie.defaults), opts);
+        this.options.destroyed = false;
 
         if (this.element.tagName.toLowerCase() === 'img') {
             var origImage = this.element;
