@@ -49,40 +49,10 @@ let isFullScreenToast = true;
 let croppie = null;
 let page = 1;
 
-const PER_PAGE = 30;
-
 // Fire when the browser has loaded the page.
 $(() => {
     let $photos = $("#photos");
-    $photos.on("scroll", () => {
-
-        let $preloader =  $("#preloader");
-
-        if(Math.ceil($photos.height() + $photos.offset().top - $preloader.offset().top - $preloader.outerHeight()) >= 1) {
-            let promiseOfLovelyPhotos = new Promise((resolve) => {
-                fetchCuratedPhotos(page++, PER_PAGE, resolve);
-            });
-
-            promiseOfLovelyPhotos.then((json) => {
-                if(json.errors) {
-                    throw json.errors;
-                }
-
-                let photos = json;
-
-                photos.forEach((photo, index) => {
-                    addPhotoToPhotosArea(photo, index);
-                    if (index === photos.length-1) {
-                        bindClickingOnAllPhotos();
-                    }
-                });
-            }).catch((err) => {
-                console.error(err);
-                let $toastContent = $('<span><i class="fa fa-frown-o fa-lg" aria-hidden="true"></i>&nbsp;' + "Oops! something bad happened." +'</span>');
-                Materialize.toast($toastContent, 5000);
-            });
-        }
-    });
+    $photos.on("scroll", waterfall);
 
     window.document.onkeydown = ((event) => {
         if(event.key === 'F11') {
@@ -100,6 +70,7 @@ $(() => {
     $photos.trigger("scroll");
 });
 
+
 /**
  * view: adds photos to the grid view.
  * @param photo
@@ -112,6 +83,7 @@ function addPhotoToPhotosArea(photo, index) {
 
     let template = document.querySelector('#photo-template');
     template.content.querySelector('img').src = photo.urls.small;
+    template.content.querySelector('img').setAttribute('custom-url', photo.urls.custom);
     template.content.querySelector('img').setAttribute('full-url', photo.urls.full);
     template.content.querySelector('img').setAttribute('raw-url', photo.urls.raw);
     template.content.querySelector('img').setAttribute('data-name', photo.id);
@@ -130,6 +102,7 @@ function addPhotoToPhotosArea(photo, index) {
  * @param photo
  */
 function displayPhotoInFullView (photo) {
+    let customPhotoUrl = photo.querySelector('img').attributes['custom-url'].value;
     let fullPhotoUrl = photo.querySelector('img').attributes['full-url'].value;
     let rawPhotoUrl = photo.querySelector('img').attributes['raw-url'].value;
     let dataName = photo.querySelector('img').attributes['data-name'].value;
@@ -148,7 +121,7 @@ function displayPhotoInFullView (photo) {
     });
 
     croppie.bind({
-        url: fullPhotoUrl,
+        url: customPhotoUrl,
         orientation: 1, //unchanged
         zoom: 0
     });
@@ -184,14 +157,34 @@ function isInFullview() {
 
 /**
  * helper:
- * @param cb
  */
-function fetchCuratedPhotos (page, perPage, cb) {
-    unsplash.photos.listCuratedPhotos(page, perPage, "latest")
-        .then(Unsplash.toJson)
-        .then(function (json) {
-            cb(json);
-        });
+function listCuratedPhotos (page, photosPerPage) {
+
+    return new Promise((resolve, reject) => {
+
+        unsplash.photos.listCuratedPhotos(page, photosPerPage, "latest")
+            .then(Unsplash.toJson)
+            .then(json => {
+
+                if(json.errors) {
+                    reject(json.errors);
+                } else {
+                    let photos = json;
+                    let promisesOfProperSizePhotos = [];
+
+                    photos.forEach((photo) => {
+                        promisesOfProperSizePhotos.push(getProperSizePhotoById(photo.id));
+                    });
+
+                    Promise.all(promisesOfProperSizePhotos).then(values => {
+                        resolve(values);
+                        console.log(values);
+                    }, reason => {
+                        reject(reason);
+                    });
+                }
+            });
+    });
 }
 
 /**
@@ -226,7 +219,7 @@ function bindSavingToDisk (photoData, imageName, cb) {
         else {
             let imagePath = path.join(filePath, imageName);
             fs.writeFile(imagePath, photoData, 'base64', function (err) {
-                if (err) { alert('There was an error saving the photo:',err.message); }
+                if (err) { alert('There was an error saving the photo:', err.message); }
                 photoData = null;
                 cb(imagePath);
             });
@@ -293,5 +286,63 @@ function neutralizeEternalUrl (element, selector) {
             e.preventDefault();
             e.stopPropagation();
         });
+    });
+}
+
+/**
+ * helper: shows photos in a waterfall way
+ */
+function waterfall() {
+    let $photos = $("#photos");
+    let $preloader =  $("#preloader");
+
+    function cleanup() {
+        $photos.on("scroll", waterfall);
+    }
+
+
+    if(Math.ceil($photos.height() + $photos.offset().top - $preloader.offset().top - $preloader.outerHeight()) >= 1) {
+        console.log(Math.ceil($photos.height() + $photos.offset().top - $preloader.offset().top - $preloader.outerHeight()));
+        $photos.off("scroll", waterfall);
+
+        const PHOTOS_PER_PAGE = 30;
+        let promiseOfLovelyPhotos = listCuratedPhotos(page++, PHOTOS_PER_PAGE);
+
+        promiseOfLovelyPhotos.then((json) => {
+            let photos = json;
+
+            photos.forEach((photo, index) => {
+                addPhotoToPhotosArea(photo, index);
+                if (index === photos.length-1) {
+                    bindClickingOnAllPhotos();
+                }
+            });
+
+            cleanup();
+        }).catch((err) => {
+            console.error(err);
+            let $toastContent = $('<span><i class="fa fa-frown-o fa-lg" aria-hidden="true"></i>&nbsp;' + "Oops! something bad happened." +'</span>');
+            Materialize.toast($toastContent, 5000);
+
+            cleanup();
+        });
+    }
+}
+
+/**
+ * helper:
+ * @param id
+ */
+function getProperSizePhotoById(id) {
+    return new Promise((resolve, reject) => {
+        unsplash.photos.getPhoto(id, screens[0].bounds.width, screens[0].bounds.height, [0, 0, screens[0].bounds.width, screens[0].bounds.height])
+            .then(Unsplash.toJson)
+            .then(json => {
+                if(json.errors) {
+                    reject(json.errors);
+                } else {
+                    resolve(json);
+                }
+            });
     });
 }
