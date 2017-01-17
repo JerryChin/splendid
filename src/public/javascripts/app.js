@@ -21,6 +21,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 */
+'use strict'
 
 // Import dependencies.
 const Unsplash = require('unsplash-js');
@@ -45,6 +46,7 @@ const initialScreenHeight = Math.round(screens[0].bounds.height/1.875 + titleBar
 
 gui.Window.get().resizeTo(initialScreenWidth, initialScreenHeight);
 
+// Global variables
 let isFullScreenToast = true;
 let croppie = null;
 let page = 1;
@@ -57,13 +59,6 @@ $(() => {
     window.document.onkeydown = ((event) => {
         if(event.key === 'F11') {
             toggleFullscreen();
-        }
-    });
-
-    // Calling bind() on croppie if available. when the window size is changed.
-    nw.Window.get().on("resize", () => {
-        if(croppie && isInFullview()) {
-            croppie.bind();
         }
     });
 
@@ -83,7 +78,7 @@ function addPhotoToPhotosArea(photo, index) {
 
     let template = document.querySelector('#photo-template');
     template.content.querySelector('img').src = photo.urls.small;
-    template.content.querySelector('img').setAttribute('custom-url', photo.urls.custom);
+    template.content.querySelector('img').setAttribute('custom-url', photo.urls.full+'&w=1920&h=1080&rect=1080&fit=crop');
     template.content.querySelector('img').setAttribute('full-url', photo.urls.full);
     template.content.querySelector('img').setAttribute('raw-url', photo.urls.raw);
     template.content.querySelector('img').setAttribute('data-name', photo.id);
@@ -103,13 +98,9 @@ function addPhotoToPhotosArea(photo, index) {
  */
 function displayPhotoInFullView (photo) {
     let customPhotoUrl = photo.querySelector('img').attributes['custom-url'].value;
-    let fullPhotoUrl = photo.querySelector('img').attributes['full-url'].value;
-    let rawPhotoUrl = photo.querySelector('img').attributes['raw-url'].value;
     let dataName = photo.querySelector('img').attributes['data-name'].value;
 
     document.querySelector('#cropper').setAttribute('data-name', dataName);
-    document.querySelector('#cropper').setAttribute('raw-url', rawPhotoUrl);
-    document.querySelector('#cropper').setAttribute('full-url', fullPhotoUrl);
 
     document.querySelector('#fullViewPhoto').style.display = 'block';
 
@@ -165,23 +156,10 @@ function listCuratedPhotos (page, photosPerPage) {
         unsplash.photos.listCuratedPhotos(page, photosPerPage, "latest")
             .then(Unsplash.toJson)
             .then(json => {
-
                 if(json.errors) {
                     reject(json.errors);
                 } else {
-                    let photos = json;
-                    let promisesOfProperSizePhotos = [];
-
-                    photos.forEach((photo) => {
-                        promisesOfProperSizePhotos.push(getProperSizePhotoById(photo.id));
-                    });
-
-                    Promise.all(promisesOfProperSizePhotos).then(values => {
-                        resolve(values);
-                        console.log(values);
-                    }, reason => {
-                        reject(reason);
-                    });
+                    resolve(json);
                 }
             });
     });
